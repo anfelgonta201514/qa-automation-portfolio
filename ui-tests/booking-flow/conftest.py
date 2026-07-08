@@ -3,6 +3,7 @@ import os
 import pytest
 from playwright.sync_api import sync_playwright
 
+from pages.admin_page import AdminPage
 from pages.booking_page import BookingPage
 from pages.home_page import HomePage
 from utils.config import Config
@@ -53,6 +54,7 @@ def pages(page):
     return {
         "home": HomePage(page),
         "booking": BookingPage(page),
+        "admin": AdminPage(page),
     }
 
 
