@@ -30,6 +30,21 @@ class AdminPage(BasePage):
         self.admin_rooms_safe_checkbox = page.get_by_role("checkbox", name="Safe")
         self.admin_rooms_create_button = page.get_by_role("button", name="Create")
 
+        self.amenity_checkboxes = {
+            "WiFi": self.admin_rooms_wifi_checkbox,
+            "TV": self.admin_rooms_tv_checkbox,
+            "Radio": self.admin_rooms_radio_checkbox,
+            "Refreshments": self.admin_rooms_refreshments_checkbox,
+            "Safe": self.admin_rooms_safe_checkbox,
+            "Views": self.admin_rooms_views_checkbox,
+        }
+
+    def check_amenity(self, name: str):
+        self.amenity_checkboxes[name].check()
+
+    def uncheck_amenity(self, name: str):
+        self.amenity_checkboxes[name].uncheck()
+
     # Options interaction
     def goto_admin_login(self):
         self.admin_login_option_button.click()
@@ -60,47 +75,14 @@ class AdminPage(BasePage):
     def select_admin_rooms_type(self, room_type: str):
         self.admin_rooms_type_dropdown.select_option(room_type)
 
-    def select_admin_rooms_accessible(self, option: str):
-        self.admin_rooms_accessible_dropdown.select_option(option)
+    def select_admin_rooms_accessible(self, option) -> None:
+        # option puede llegar como bool (Excel auto-tipa "true"/"false" como
+        # Boolean) o como str; normalizamos siempre a texto en minúscula,
+        # que es lo que espera el value real del <option> del DOM.
+        self.admin_rooms_accessible_dropdown.select_option(str(option).lower())
 
     def type_admin_rooms_price(self, price: str):
         self.admin_rooms_price_input.fill(price)
-
-    def check_admin_rooms_wifi_checkbox(self):
-        self.admin_rooms_wifi_checkbox.check()
-
-    def check_admin_rooms_tv_checkbox(self):
-        self.admin_rooms_tv_checkbox.check()
-
-    def check_admin_rooms_views_checkbox(self):
-        self.admin_rooms_views_checkbox.check()
-
-    def check_admin_rooms_radio_checkbox(self):
-        self.admin_rooms_radio_checkbox.check()
-
-    def check_admin_rooms_refreshments_checkbox(self):
-        self.admin_rooms_refreshments_checkbox.check()
-
-    def check_admin_rooms_safe_checkbox(self):
-        self.admin_rooms_safe_checkbox.check()
-
-    def uncheck_admin_rooms_wifi_checkbox(self):
-        self.admin_rooms_wifi_checkbox.uncheck()
-
-    def uncheck_admin_rooms_tv_checkbox(self):
-        self.admin_rooms_tv_checkbox.uncheck()
-
-    def uncheck_admin_rooms_views_checkbox(self):
-        self.admin_rooms_views_checkbox.uncheck()
-
-    def uncheck_admin_rooms_radio_checkbox(self):
-        self.admin_rooms_radio_checkbox.uncheck()
-
-    def uncheck_admin_rooms_refreshments_checkbox(self):
-        self.admin_rooms_refreshments_checkbox.uncheck()
-
-    def uncheck_admin_rooms_safe_checkbox(self):
-        self.admin_rooms_safe_checkbox.uncheck()
 
     def click_admin_rooms_create(self):
         self.admin_rooms_create_button.click()

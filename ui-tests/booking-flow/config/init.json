@@ -1,6 +1,6 @@
 {
   "BASE_URL": "https://automationintesting.online",
-  "headless_mode": false,
+  "headless_mode": true,
   "take_screenshots": true,
   "take_logs": true,
   "disable_cookies": false,

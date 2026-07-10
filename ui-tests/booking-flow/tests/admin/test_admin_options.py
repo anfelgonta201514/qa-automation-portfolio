@@ -25,7 +25,8 @@ def test_admin_options(pages):
     admin.select_admin_rooms_type("Single")
     admin.select_admin_rooms_accessible("true")
     admin.type_admin_rooms_price("111")
-    admin.check_admin_rooms_wifi_checkbox()
+    admin.check_amenity("WiFi")
+    admin.check_amenity("Safe")
     admin.click_admin_rooms_create()
 
-    expect(admin.page.get_by_text(room_number, exact=True)).to_be_visible()
+    expect(admin.page.locator(f"#roomName{room_number}")).to_be_visible()

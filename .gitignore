@@ -4,7 +4,9 @@ __pycache__/
 venv/
 traces/
 allure-results/
+allure-results*/
 allure-report/
+~$*.xlsx
 .pytest_cache/
 node_modules/
 .idea/
