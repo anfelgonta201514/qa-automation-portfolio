@@ -27,11 +27,14 @@ class BookingClient:
     def get_booking_ids(self, **filters):
         return self.session.get(f"{self.base_url}/booking", params=filters)
 
-    def update_booking(self, booking_id: int, payload: dict, token: str):
+    def update_booking(self, booking_id: int, payload: dict, token: str | None = None):
+        # token opcional para poder testear el caso "sin cookie de auth"
+        # (distinto de "con token inválido") sin forzar un valor falso.
+        cookies = {"token": token} if token else {}
         return self.session.put(
             f"{self.base_url}/booking/{booking_id}",
             json=payload,
-            cookies={"token": token},
+            cookies=cookies,
         )
 
     def delete_booking(self, booking_id: int, token: str):
