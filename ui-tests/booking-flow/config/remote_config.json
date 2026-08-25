@@ -1,0 +1,12 @@
+{
+  "BASE_URL": "https://automationintesting.online",
+  "headless_mode": true,
+  "take_screenshots": true,
+  "take_logs": true,
+  "disable_cookies": false,
+  "test_mode": false,
+  "payment_page": false,
+  "payment_retries": 2,
+  "browser": "chromium",
+  "slow_mo": 0
+}
