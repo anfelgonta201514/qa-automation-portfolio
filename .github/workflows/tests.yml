@@ -5,7 +5,7 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
-  workflow_dispatch:
+  workflow_dispatch: # permite lanzarlo a mano desde la pestaña Actions, sin push/PR
 
 jobs:
   api-tests:
@@ -17,6 +17,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
 
       - name: Install dependencies
         run: pip install -r requirements.txt
@@ -44,9 +46,18 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ matrix.browser }}-${{ hashFiles('requirements.txt') }}
 
       - name: Install Playwright browser
         run: python -m playwright install --with-deps ${{ matrix.browser }}
@@ -55,7 +66,12 @@ jobs:
         working-directory: ui-tests/booking-flow
         env:
           BROWSER: ${{ matrix.browser }}
-        run: pytest -v --alluredir=allure-results
+        # --reruns: la app de demo (automationintesting.online) es un servicio
+        # gratuito de terceros, no garantizado — ocasionalmente falla por red,
+        # no por bugs del código (documentado en el README). Reintentar es la
+        # respuesta estándar de CI a flakiness de infraestructura externa, no
+        # una forma de esconder fallos reales.
+        run: pytest -v --alluredir=allure-results --reruns 2 --reruns-delay 5
 
       - name: Upload Allure results
         if: always()

@@ -22,10 +22,12 @@ Suite Playwright + pytest contra [Restful Booker Platform](https://automationint
 
 **Paralelismo (`pytest-xdist`) contra un servidor de demo compartido.** Correr la batería con `-n` abre varios navegadores simultáneos contra `automationintesting.online`, un servicio gratuito no pensado para alta concurrencia. Ocasionalmente un worker puede recibir un error de red genuino (página de error nativa del navegador, no un fallo de aserción) si el servidor no responde a tiempo. Es flakiness de infraestructura compartida, no del código — si se vuelve frecuente, bajar el número de workers (`-n 3`/`-n 4`) reduce la probabilidad.
 
+**Config local vs pipeline.** `config/init.json` es para ejecución local (headless configurable, valores cómodos para debug); `config/remote_config.json` es lo que usa CI (headless siempre `true`, no hay pantalla en el runner) — mismo patrón que en el proyecto de Selenium. `Config` elige el archivo según la variable de entorno `CI` (que GitHub Actions define automáticamente), sin mezclar lógica de entorno con los datos de configuración. El navegador (`BROWSER`) sí se sobreescribe puntualmente por variable de entorno porque la matrix de CI necesita 3 navegadores distintos en la misma corrida, algo que un solo archivo estático no puede representar.
+
 ## Arquitectura
 
-- `config/init.json` — configuración (BASE_URL, modo headless, etc.)
-- `utils/config.py` — carga la config como clase estática
+- `config/init.json` / `config/remote_config.json` — configuración local vs pipeline (BASE_URL, modo headless, etc.)
+- `utils/config.py` — carga la config como clase estática, según el entorno
 - `utils/battery_loader.py` — lee un `.xlsx` de `data/` y devuelve `list[dict]` para parametrizar tests
 - `pages/` — Page Object Model: `base_page.py`, `home_page.py`, `booking_page.py`, `admin_page.py`
 - `conftest.py` — fixtures de Playwright (browser/context/page/pages) + captura de traza y screenshot en fallos
