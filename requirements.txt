@@ -11,3 +11,5 @@ pytest-xdist>=3.6
 requests>=2.32
 pydantic>=2.8
 pytest-rerunfailures>=14.0
+pytest-bdd>=7.3
+allure-pytest-bdd>=2.13

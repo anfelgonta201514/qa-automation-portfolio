@@ -67,7 +67,7 @@ jobs:
             -e CI=true -e BROWSER=${{ matrix.browser }} \
             -v "${{ github.workspace }}/ui-tests/booking-flow/allure-results:/app/ui-tests/booking-flow/allure-results" \
             -w /app/ui-tests/booking-flow \
-            qa-automation-portfolio pytest tests/admin tests/battery/test_room_battery.py -v --alluredir=allure-results
+            qa-automation-portfolio pytest tests/admin tests/battery/test_room_battery.py -v -p allure_pytest --alluredir=allure-results
 
       - name: Run UI tests (booking flow)
         # continue-on-error + --reruns: automationintesting.online falla de
@@ -85,7 +85,7 @@ jobs:
             -v "${{ github.workspace }}/ui-tests/booking-flow/allure-results:/app/ui-tests/booking-flow/allure-results" \
             -v "${{ github.workspace }}/ui-tests/booking-flow/traces:/app/ui-tests/booking-flow/traces" \
             -w /app/ui-tests/booking-flow \
-            qa-automation-portfolio pytest tests/booking tests/battery/test_booking_battery.py -v --alluredir=allure-results --reruns 2 --reruns-delay 5
+            qa-automation-portfolio pytest tests/booking tests/battery/test_booking_battery.py -v -p allure_pytest --alluredir=allure-results --reruns 2 --reruns-delay 5
 
       - name: Upload Allure results
         if: always()

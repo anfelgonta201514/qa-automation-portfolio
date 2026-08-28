@@ -11,8 +11,11 @@ Demuestra un stack alineado a mercado 2026: UI testing (Playwright), API testing
 ```
 qa-automation-portfolio/
 ├── ui-tests/booking-flow/   → Playwright contra Restful Booker Platform (automationintesting.online)
+│   ├── features/            → BDD (Gherkin) — vive aquí, no como carpeta separada,
+│   │                           para reutilizar los Page Objects sin hacks de sys.path
+│   └── tests/bdd/            → step definitions que conectan cada .feature con los Page Objects
 ├── api-tests/restful-booker/→ pytest + requests contra restful-booker.herokuapp.com
-├── features/                → BDD con pytest-bdd
+├── Dockerfile                → mismo usado en local y en CI
 ├── .github/workflows/       → CI
 └── reports/                 → configuración/salida de Allure
 ```
@@ -20,6 +23,7 @@ qa-automation-portfolio/
 ## Stack
 
 - Python 3.13, Playwright, pytest
+- pytest-bdd para BDD (Gherkin)
 - Allure para reportes
 - GitHub Actions para CI
 - Docker para entorno reproducible
