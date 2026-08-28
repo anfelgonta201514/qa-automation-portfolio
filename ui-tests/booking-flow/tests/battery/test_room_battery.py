@@ -1,3 +1,5 @@
+import random
+
 import pandas as pd
 import pytest
 from playwright.sync_api import expect
@@ -25,7 +27,12 @@ def test_admin_room_battery(pages, scenario):
     admin.click_admin_login_button()
     admin.goto_admin_rooms()
 
-    room_number = str(scenario["room_number"])
+    # El número base viene del Excel (legible, trazable al escenario), pero
+    # se le agrega un sufijo aleatorio antes de enviarlo: si dos corridas de
+    # CI caen dentro de la misma ventana de reset de ~10 min de la app (nos
+    # pasó hoy con varios pushes seguidos), un número fijo colisiona con uno
+    # ya creado y produce un id duplicado en el DOM (strict mode violation).
+    room_number = f"{scenario['room_number']}{random.randint(10, 99)}"
     admin.type_admin_rooms_name(room_number)
     admin.select_admin_rooms_type(scenario["type"])
     admin.select_admin_rooms_accessible(scenario["accessible"])
