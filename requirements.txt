@@ -1,4 +1,7 @@
-playwright>=1.45
+# Versión fijada (no >=): el tag de la imagen base en el Dockerfile debe
+# coincidir exacto con esta versión, o Playwright rechaza lanzar el
+# navegador (ver comentario en el Dockerfile).
+playwright==1.62.0
 pytest>=8.0
 pytest-playwright>=0.5
 allure-pytest>=2.13
