@@ -13,6 +13,10 @@ class BookingPage(BasePage):
         self.email_input = page.get_by_role("textbox", name="Email")
         self.phone_input = page.get_by_role("textbox", name="Phone")
         self.return_home_button = page.get_by_role("link", name="Return home")
+        # Mensaje real que muestra la app cuando el teléfono no tiene el
+        # largo esperado (verificado contra la app: rechaza 10 dígitos,
+        # acepta 11 — ver README).
+        self.phone_length_validation_error = page.get_by_text("size must be between 11 and 21")
 
     def fill_first_name(self, name: str):
         self.first_name_input.click()

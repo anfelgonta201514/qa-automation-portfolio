@@ -1,8 +1,10 @@
+from utils.allure_helpers import attach_response
 from utils.schemas import CreateBookingResponse
 
 
 def test_create_booking_valid_schema(api_client, booking_payload):
     response = api_client.create_booking(booking_payload)
+    attach_response(response, "Respuesta de POST /booking")
 
     assert response.status_code == 200
     # Si el JSON no tiene exactamente esta forma (campos faltantes, tipos
@@ -12,17 +14,20 @@ def test_create_booking_valid_schema(api_client, booking_payload):
 def test_get_booking_returns_created_data(api_client, created_booking):
     booking_id, payload = created_booking
     response = api_client.get_booking(booking_id)
+    attach_response(response, f"Respuesta de GET /booking/{booking_id}")
     assert response.status_code == 200
     assert response.json()["firstname"] == payload["firstname"]
 
 def test_get_booking_nonexistent_id_returns_404(api_client):
     response = api_client.get_booking(999999999)
+    attach_response(response, "Respuesta de GET /booking/999999999")
     assert response.status_code == 404
 
 def test_update_booking_with_valid_token(api_client, auth_token, created_booking):
     booking_id, payload = created_booking
     payload["lastname"] = "Editado"
     response = api_client.update_booking(booking_id, payload, auth_token)
+    attach_response(response, f"Respuesta de PUT /booking/{booking_id} con token")
     assert response.status_code == 200
     assert response.json()["lastname"] == payload["lastname"]
 
@@ -30,4 +35,5 @@ def test_update_booking_without_token_returns_403(api_client, created_booking):
     booking_id, payload = created_booking
     payload["lastname"] = "Editado"
     response = api_client.update_booking(booking_id, payload)
+    attach_response(response, f"Respuesta de PUT /booking/{booking_id} sin token")
     assert response.status_code == 403

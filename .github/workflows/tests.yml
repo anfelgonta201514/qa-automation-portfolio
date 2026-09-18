@@ -87,12 +87,42 @@ jobs:
             -w /app/ui-tests/booking-flow \
             qa-automation-portfolio pytest tests/booking tests/battery/test_booking_battery.py -v -p allure_pytest --alluredir=allure-results --reruns 2 --reruns-delay 5
 
+      - name: Run UI tests (BDD - admin room)
+        run: |
+          mkdir -p ui-tests/booking-flow/allure-results-bdd
+          docker run --rm \
+            -e CI=true -e BROWSER=${{ matrix.browser }} \
+            -v "${{ github.workspace }}/ui-tests/booking-flow/allure-results-bdd:/app/ui-tests/booking-flow/allure-results-bdd" \
+            -w /app/ui-tests/booking-flow \
+            qa-automation-portfolio pytest tests/bdd/test_admin_room_steps.py -v -p allure_pytest_bdd --alluredir=allure-results-bdd
+
+      - name: Run UI tests (BDD - booking)
+        # Mismo problema externo que el step "booking flow" de arriba (ver su
+        # comentario): automationintesting.online falla consistentemente solo
+        # desde runners de GitHub. No bloqueante por el mismo motivo, no un bug.
+        continue-on-error: true
+        run: |
+          mkdir -p ui-tests/booking-flow/traces
+          docker run --rm \
+            -e CI=true -e BROWSER=${{ matrix.browser }} \
+            -v "${{ github.workspace }}/ui-tests/booking-flow/allure-results-bdd:/app/ui-tests/booking-flow/allure-results-bdd" \
+            -v "${{ github.workspace }}/ui-tests/booking-flow/traces:/app/ui-tests/booking-flow/traces" \
+            -w /app/ui-tests/booking-flow \
+            qa-automation-portfolio pytest tests/bdd/test_booking_steps.py -v -p allure_pytest_bdd --alluredir=allure-results-bdd --reruns 2 --reruns-delay 5
+
       - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-ui-${{ matrix.browser }}
           path: ui-tests/booking-flow/allure-results
+
+      - name: Upload Allure BDD results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-bdd-ui-${{ matrix.browser }}
+          path: ui-tests/booking-flow/allure-results-bdd
 
       - name: Upload traces on failure
         if: failure()

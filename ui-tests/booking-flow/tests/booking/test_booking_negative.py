@@ -1,0 +1,28 @@
+import uuid
+
+from playwright.sync_api import expect
+
+from utils.allure_helpers import attach_screenshot
+
+
+def test_booking_invalid_phone_length_shows_validation_error(pages):
+    home = pages["home"]
+    booking = pages["booking"]
+
+    home.goto()
+    home.select_dates()
+    home.search_availability()
+    home.book_room(2)
+
+    unique_id = uuid.uuid4().hex[:8]
+
+    booking.click_reserve_now()
+    booking.fill_first_name("Andres")
+    booking.fill_last_name("Gonzalez")
+    booking.fill_email(f"andres.{unique_id}@example.com")
+    booking.fill_phone("1234567890")  # 10 dígitos: la app rechaza (rango real 11-21)
+    booking.click_reserve_now()
+
+    expect(booking.phone_length_validation_error).to_be_visible()
+    expect(booking.page.get_by_text("Booking Confirmed")).to_be_hidden()
+    attach_screenshot(booking.page, "Teléfono de 10 dígitos rechazado")

@@ -1,6 +1,6 @@
 # CONTEXT.md — qa-automation-portfolio
 
-> Documento de continuidad para retomar este proyecto en cualquier sesión nueva de Claude Code sin perder contexto. Creado el 2026-09-18, actualizado el 2026-09-18 (misma sesión) verificando el estado real de los archivos (no solo la memoria de la conversación) — esto es lo que cambia seguido; las reglas y convenciones estables viven en [`CLAUDE.md`](CLAUDE.md), que se carga automáticamente en cada sesión de Claude Code.
+> Documento de continuidad para retomar este proyecto en cualquier sesión nueva de Claude Code sin perder contexto. Creado el 2026-09-18, actualizado el 2026-09-18 (sesión de cierre de pendientes, ver sección 8) verificando el estado real de los archivos (no solo la memoria de la conversación) — esto es lo que cambia seguido; las reglas y convenciones estables viven en [`CLAUDE.md`](CLAUDE.md), que se carga automáticamente en cada sesión de Claude Code.
 >
 > Este repo es **parte** de un plan de estudio de 14 semanas más amplio (Claude IA + QE Automation). El plan completo vive en `C:\Users\andre\Documents\proyecto_claude\plan-estudio-andres-qe-ia-contexto-v2.md` y en la memoria de Claude Code (`plan_estudio_qe.md`, `perfil_andres.md`, `reglas_evaluacion.md`, `feedback_no_coauthor_portfolio.md`). Este CONTEXT.md documenta específicamente el estado del **repo**, no el plan de estudio completo.
 
@@ -36,22 +36,19 @@ Cada bloque de este repo corresponde a una semana del plan de estudio (semanas 4
 | **UI — Admin** (login, navegación, creación de habitación) | ✅ Funciona, bloqueante en CI | `ui-tests/booking-flow/tests/admin/test_admin_options.py` |
 | **UI — Batería: creación de habitaciones (`test_room_battery.py`)** | ✅ Funciona, bloqueante en CI | `ui-tests/booking-flow/tests/battery/test_room_battery.py` |
 | **UI — Batería: flujo de reserva (`test_booking_battery.py`)** | ✅ Funciona local, agrupada con el booking flow en CI (no bloqueante, misma flakiness) | `ui-tests/booking-flow/tests/battery/test_booking_battery.py` |
-| **UI — BDD** | ✅ Funciona, **NO conectado a CI todavía** | `ui-tests/booking-flow/features/` + `tests/bdd/` |
+| **UI — BDD** | ✅ Funciona local y en CI (escenario admin/rooms bloqueante, escenario booking no bloqueante — mismo criterio que su versión no-BDD) | `ui-tests/booking-flow/features/` + `tests/bdd/` |
 | **API testing** | ✅ Funciona (10/10 tests pasan) | `api-tests/restful-booker/` |
 | **CI/CD (GitHub Actions)** | ✅ Funciona, badge verde | `.github/workflows/tests.yml` |
 | **Docker** | ✅ Funciona local y en CI (mismo Dockerfile, "dos usos") | `Dockerfile`, `.dockerignore` |
 | **Reportes Allure** | ✅ Funciona, con capturas de pantalla en puntos de validación | `utils/allure_helpers.py` |
 | **Documentación de continuidad** | ✅ `CONTEXT.md` (este archivo) + `CLAUDE.md` creados y commiteados | `CONTEXT.md`, `CLAUDE.md` |
 
-Todo el trabajo está **commiteado y pusheado** a `origin/master`. Último commit: `3802cd7` — "docs: add project context and Claude instructions" (agrega `CLAUDE.md` + `CONTEXT.md`, 533 líneas, sin tocar código). Commit anterior: `ff834d4` — cierre de la semana 7 (Docker + BDD). Working tree limpio (`git status` sin cambios pendientes al momento de escribir esto).
+Último commit pusheado a `origin/master`: `e0c7b50` — "update context.md". A partir de ahí, esta sesión (2026-09-18, cierre de pendientes) dejó cambios **sin commitear** en el working tree — ver el detalle completo y la lista de archivos en la sección 8. Andres los revisa y comitea/pushea él mismo (regla del repo).
 
 ### ❌ Qué NO funciona / está incompleto
 
-- **El flujo de booking falla el 100% de las veces al correr desde GitHub Actions** (no localmente) — afecta tanto a `tests/booking/test_booking.py` como a `tests/battery/test_booking_battery.py` (agrupados en el mismo step de CI). Es una limitación externa (ver sección 6), mitigada con `continue-on-error: true` — no bloquea el build, pero el step en sí sigue en rojo cada vez.
-- **`tests/bdd/` no está conectado al workflow de CI** — el `.github/workflows/tests.yml` solo corre `tests/admin`, `tests/battery`, `tests/booking`. Los escenarios BDD solo se ejecutan localmente hasta ahora.
-- **Casos negativos explícitos pendientes en UI**: teléfono inválido (se descubrió la regla — 10 dígitos falla, 11 pasa — pero no hay un test que lo verifique explícitamente) y login de admin con credenciales incorrectas.
+- **El flujo de booking falla el 100% de las veces al correr desde GitHub Actions** (no localmente) — afecta a `tests/booking/test_booking.py`, `tests/battery/test_booking_battery.py` y ahora también al escenario BDD equivalente (`tests/bdd/test_booking_steps.py`), agrupados con el mismo criterio de `continue-on-error: true` en CI. Es una limitación externa (ver sección 6) — no bloquea el build, pero esos steps siguen en rojo cada vez.
 - **`BasePage.accept_cookies_if_present()`** (en `pages/base_page.py`) es un método stub sin implementar (`# TODO: mapear el banner de cookies real...`) y no se usa en ningún lado actualmente.
-- **No hay capturas de Allure en los tests de `api-tests/`** — el patrón de `attach_screenshot()` solo existe en el lado de UI (no aplica igual para API, pero tampoco hay nada equivalente ahí, ej. adjuntar el JSON de respuesta).
 - **Semanas 8-14 del plan de estudio no han empezado** (servidor Oracle Cloud, backend Flask+Postgres, frontend, Routines, Cowork/MCP, demos IA, lanzamiento) — este repo (`qa-automation-portfolio`) es semanas 4-7 únicamente.
 
 ---
@@ -82,6 +79,7 @@ qa-automation-portfolio/
 │   │   ├── test_booking_crud.py
 │   │   └── test_negative_cases.py
 │   └── utils/
+│       ├── allure_helpers.py             # attach_response() — adjunta el body HTTP a Allure, solo en validaciones
 │       ├── booking_client.py             # BookingClient — wrapper de requests, rol de "Page Object" para HTTP
 │       ├── config.py                     # BASE_URL, credenciales admin
 │       └── schemas.py                    # modelos pydantic para validar shape de respuestas
@@ -105,14 +103,18 @@ qa-automation-portfolio/
     │   └── home_page.py
     ├── pytest.ini                        # incluye la config de plugins Allure (ver sección 5)
     ├── tests/
-    │   ├── admin/test_admin_options.py
+    │   ├── admin/
+    │   │   ├── test_admin_options.py
+    │   │   └── test_admin_negative.py    # login con credenciales incorrectas
     │   ├── battery/
     │   │   ├── test_booking_battery.py
     │   │   └── test_room_battery.py
     │   ├── bdd/                          # step definitions que conectan .feature con Page Objects
     │   │   ├── test_admin_room_steps.py
     │   │   └── test_booking_steps.py
-    │   └── booking/test_booking.py
+    │   └── booking/
+    │       ├── test_booking.py
+    │       └── test_booking_negative.py  # teléfono con longitud inválida
     └── utils/
         ├── allure_helpers.py             # attach_screenshot() — helper compartido
         ├── battery_loader.py             # lee .xlsx con pandas → list[dict] para parametrize
@@ -143,7 +145,8 @@ qa-automation-portfolio/
 |---|---|---|
 | `Dockerfile` | Imagen única para local y CI | Tag de la imagen base **debe coincidir exacto** con la versión de `playwright` en `requirements.txt` |
 | `requirements.txt` | Todas las dependencias Python del repo (UI + API) | `playwright==1.62.0` está **fijado**, no con `>=` (a propósito, ver sección 5) |
-| `.github/workflows/tests.yml` | Pipeline de CI | Ver detalle completo en sección 3; nota clave: los dos steps de UI pasan `-p allure_pytest` explícito |
+| `.github/workflows/tests.yml` | Pipeline de CI | Ver detalle completo en sección 3; nota clave: los steps de UI "planos" pasan `-p allure_pytest` explícito, los dos steps de BDD pasan `-p allure_pytest_bdd` explícito (alluredir separado, `allure-results-bdd`) |
+| `api-tests/restful-booker/utils/allure_helpers.py` | `attach_response(response, name)` | Igual que `attach_screenshot` en UI: usar SOLO en el punto de validación de cada test |
 | `ui-tests/booking-flow/pytest.ini` | Config de pytest para la suite de UI | Tiene bloques **comentados** para activar reportes Allure puntualmente (ver sección 5) |
 | `ui-tests/booking-flow/conftest.py` | Fixtures Playwright | `pages` fixture instancia `HomePage`, `BookingPage`, `AdminPage` juntos |
 | `ui-tests/booking-flow/utils/config.py` | Elige `init.json` vs `remote_config.json` según `CI` env var | Patrón traído del trabajo de Andres en Selenium |
@@ -247,6 +250,13 @@ Andres pidió explícitamente dos archivos con propósitos distintos: `CLAUDE.md
 ### Problema recurrente de entorno: Git Bash en Windows "traga" rutas estilo Unix
 - Al verificar volúmenes de Docker con rutas como `/app/allure-results`, Git Bash (MSYS) las reinterpretaba como rutas de Windows, dando falsos negativos. **Solución:** usar PowerShell para esas verificaciones específicas, no Git Bash.
 
+### Problema nuevo (encontrado al cerrar pendientes, 2026-09-18): `allure-pytest-bdd` empezó a chocar también en `api-tests`, que nunca usó BDD
+- **Síntoma:** al correr `pytest -v` en `api-tests/restful-booker` (sin tocar su código, solo agregando un helper de Allure), pytest revienta al arrancar con el mismo `ValueError: option names {'--alluredir'} already added` documentado para UI — pero esta suite ni siquiera importa `pytest-bdd`.
+- **Verificación:** se confirmó con `git stash` que el crash ya ocurría en el código **original**, sin ninguno de los cambios de esta sesión — no es una regresión introducida, es un problema de entorno preexistente que no se había notado.
+- **Causa:** `allure-pytest` y `allure-pytest-bdd` viven en el `requirements.txt` único de la raíz (`>=2.13`, no fijado exacto). El venv local tenía `allure-pytest-bdd==2.16.0` instalado — una versión más nueva que la que estaba cuando se cerró la semana 7. Como ambos paquetes quedan instalados en el mismo entorno para TODO el repo, cualquier suite los auto-carga salvo que los desactive explícitamente; `api-tests/pytest.ini` nunca desactivó ninguno (nunca hizo falta hasta ahora) porque, hasta el momento en que se fijó esta versión, no chocaban en la práctica.
+- **Solución:** agregar `-p no:allure_pytest_bdd` al `addopts` de `api-tests/restful-booker/pytest.ini` (defensivo: esa suite nunca usa BDD, así que no pierde nada desactivándolo). `allure-pytest` se deja activo por defecto ahí porque sí se usa (`--alluredir` en CI sin pasar `-p` explícito). Verificado: 10/10 tests vuelven a pasar.
+- **Nota para el futuro:** esto confirma que `allure-pytest>=2.13` / `allure-pytest-bdd>=2.13` (sin fijar, a diferencia de `playwright==X.Y.Z`) puede volver a romper algo con una actualización silenciosa de cualquiera de los dos paquetes. Si vuelve a pasar, la misma receta aplica: identificar qué suite no necesita cuál plugin y desactivarlo explícito en su propio `pytest.ini`.
+
 ### Problema: la primera versión de `CONTEXT.md` tenía una imprecisión real (encontrada al pedir revisión explícita)
 - **Síntoma:** la tabla de estado decía que "Batería de datos (TR/battery)" completa era bloqueante en CI.
 - **Causa:** al resumir de memoria, se trató la batería como un bloque único. `tests.yml` en realidad la divide: `test_room_battery.py` va en el step bloqueante (admin+rooms), pero `test_booking_battery.py` va agrupado con el booking flow (no bloqueante, misma flakiness).
@@ -257,10 +267,10 @@ Andres pidió explícitamente dos archivos con propósitos distintos: `CLAUDE.md
 ## 7. PENDIENTES
 
 ### Explícitamente pendientes (mencionados en README o en conversación)
-- [ ] Conectar `tests/bdd/` al workflow de CI (`tests.yml`) — hoy solo corre local
-- [ ] Caso negativo explícito: teléfono con longitud inválida (la regla ya se descubrió — 10 dígitos falla, 11 pasa — falta el test)
-- [ ] Caso negativo explícito: login de admin con credenciales incorrectas
-- [ ] Evaluar agregar `attach_screenshot()`-equivalente (adjuntar JSON de respuesta) a los tests de `api-tests/`
+- [x] Conectar `tests/bdd/` al workflow de CI (`tests.yml`) — **hecho 2026-09-18**: dos steps nuevos (`BDD - admin room` bloqueante, `BDD - booking` no bloqueante), reporte en `allure-results-bdd`
+- [x] Caso negativo explícito: teléfono con longitud inválida — **hecho 2026-09-18**: `tests/booking/test_booking_negative.py`, verificado contra la app real (rango real 11-21 caracteres, mensaje `"size must be between 11 and 21"`)
+- [x] Caso negativo explícito: login de admin con credenciales incorrectas — **hecho 2026-09-18**: `tests/admin/test_admin_negative.py`, verificado que la app NO renderiza ningún mensaje de error (solo en el body de la respuesta HTTP) — se valida el estado negativo (sigue en el form de login, nunca aparece la nav de admin)
+- [x] Evaluar agregar `attach_screenshot()`-equivalente (adjuntar JSON de respuesta) a los tests de `api-tests/` — **hecho 2026-09-18**: `utils/allure_helpers.py::attach_response()`, usado en los 10 tests existentes
 
 ### Bugs conocidos / deuda técnica menor
 - `pages/base_page.py::accept_cookies_if_present()` es un stub sin implementar ni usar — candidato a implementarlo o eliminarlo
@@ -280,7 +290,36 @@ Andres pidió explícitamente dos archivos con propósitos distintos: `CLAUDE.md
 
 ## 8. ÚLTIMO PUNTO DE TRABAJO
 
-**Qué se estaba haciendo justo antes de este último cambio:**
+**Sesión del 2026-09-18 (continuación, cierre de pendientes — opción "b"):**
+
+Al retomar esta sesión se le presentaron a Andres las 3 opciones de la sección 8 anterior (empezar semana 8 / cerrar pendientes de este repo / pausar). Eligió **cerrar pendientes**. Se cerraron los 4 pendientes explícitos de la sección 7:
+
+1. **Conectar `tests/bdd/` a CI** — se agregaron dos steps nuevos en `tests.yml` (`Run UI tests (BDD - admin room)` bloqueante, `Run UI tests (BDD - booking)` con `continue-on-error: true`, mismo criterio que su versión no-BDD), cada uno con `-p allure_pytest_bdd` y su propio `--alluredir=allure-results-bdd`, más su propio step de upload de artifacts.
+2. **Caso negativo: teléfono inválido** — antes de escribir el test se verificó el comportamiento real contra `automationintesting.online` con el navegador (regla del repo: nunca asumir sin verificar). Se descubrió el mensaje exacto que muestra la app (`"size must be between 11 and 21"`, un `<li>` visible junto al campo) y que el rango real es 11-21 caracteres, no "10 falla / 11 pasa" como estaba fraseado antes. Se agregó el locator `phone_length_validation_error` a `BookingPage` y el test `tests/booking/test_booking_negative.py`.
+3. **Caso negativo: login de admin incorrecto** — mismo proceso de verificación con el navegador: se confirmó que la app NO renderiza ningún mensaje de error en el DOM ante credenciales inválidas (el error solo viene en el body de la respuesta `POST /api/auth/login`, invisible para el usuario). El test (`tests/admin/test_admin_negative.py`) valida el estado negativo real: el form de login sigue visible y la navegación de admin nunca aparece.
+4. **Adjuntar respuesta HTTP a Allure en `api-tests/`** — se creó `utils/allure_helpers.py::attach_response()` (mismo principio que `attach_screenshot()` de UI) y se usó en los 10 tests existentes, en el punto de validación de cada uno.
+
+**Hallazgo no planeado, encontrado y arreglado en el camino:** al validar el punto 4 corriendo la suite de API localmente, pytest reventó al arrancar con el mismo conflicto `allure-pytest` / `allure-pytest-bdd` que ya se había resuelto para UI en la sesión anterior — pero esta vez en `api-tests`, que nunca usó BDD. Se confirmó con `git stash` que el problema ya existía en el código sin tocar (no es una regresión de esta sesión): el venv local tiene una versión más nueva de `allure-pytest-bdd` que antes no chocaba en la práctica. Se corrigió agregando `-p no:allure_pytest_bdd` al `pytest.ini` de `api-tests`. Documentado en la sección 6 (nuevo problema) y en `CLAUDE.md` (Restricciones técnicas, ya que es una restricción dura que ahora aplica a ambas suites, no solo a UI).
+
+**Verificación local hecha en esta sesión** (todo con `CI=true`, headless, contra la app/API real — no se asumió nada):
+- `tests/admin` (options + negative), `tests/booking/test_booking_negative.py`, `tests/bdd/test_admin_room_steps.py`, `tests/bdd/test_booking_steps.py` — todos pasan.
+- `api-tests/restful-booker` completo — 10/10 pasan, con adjuntos de Allure verificados (JSON para la mayoría, texto plano para `/ping`).
+- `tests/booking/test_booking.py` y `tests/bdd/test_booking_steps.py` (la reserva "feliz", no la negativa) fallaron intermitentemente en este entorno con el mismo error `"This page couldn't load"` ya documentado para CI — consistente con la hipótesis de bloqueo de IPs de datacenter (este entorno de ejecución de Claude Code probablemente también sale por una IP de ese tipo, a diferencia de la máquina personal de Andres). No es una regresión de esta sesión ni algo que estos cambios hayan tocado — el test negativo de teléfono no llega a ese punto del flujo y pasó siempre. Andres debería confirmar en SU máquina que el booking flow "feliz" sigue pasando en local, como siempre.
+
+**Todavía no comiteado.** Quedan sin commitear (working directory listo para revisión de Andres, siguiendo la regla de que Claude no comitea/pushea sin pedirlo explícito):
+- `.github/workflows/tests.yml`, `CLAUDE.md`, `CONTEXT.md` (este archivo), ambos README de suite
+- `ui-tests/booking-flow/pages/booking_page.py` (locator nuevo)
+- `ui-tests/booking-flow/tests/booking/test_booking_negative.py` (nuevo)
+- `ui-tests/booking-flow/tests/admin/test_admin_negative.py` (nuevo)
+- `api-tests/restful-booker/pytest.ini` (fix del conflicto de Allure)
+- `api-tests/restful-booker/utils/allure_helpers.py` (nuevo)
+- `api-tests/restful-booker/tests/test_auth.py`, `test_booking_crud.py`, `test_negative_cases.py` (uso de `attach_response`)
+
+**Cuál debería ser el siguiente paso:** con los 4 pendientes de este repo cerrados, las opciones vuelven a ser las mismas 3 de antes (semana 8 / algo más de deuda técnica menor — `accept_cookies_if_present()` stub, nota de `reports/` en el README raíz / pausar), salvo que ahora ya no hay pendientes explícitos de UI o API pendientes de cerrar.
+
+---
+
+**Qué se estaba haciendo justo antes de este último cambio (sesión anterior, cierre de semana 7 + documentación):**
 
 Se acababa de cerrar completamente la **semana 7** del plan de estudio (Docker + BDD), incluyendo una sesión larga de troubleshooting real sobre reportes de Allure. Después, en la misma sesión, se hizo un trabajo puramente de documentación/continuidad (sin tocar código de la suite):
 

@@ -24,8 +24,11 @@ Todo se verificó primero con `curl`/Postman antes de escribir código — varia
 - `utils/config.py` — `BASE_URL` y credenciales de admin
 - `utils/booking_client.py` — `BookingClient`, encapsula las llamadas HTTP (equivalente a un Page Object para la API); `update_booking()` acepta `token` opcional para poder testear "sin cookie de auth" como caso propio, distinto de "token inválido"
 - `utils/schemas.py` — modelos `pydantic` para validar la forma de las respuestas
+- `utils/allure_helpers.py` — `attach_response()`, equivalente a `attach_screenshot()` en la suite de UI: adjunta el body de la respuesta HTTP (JSON o texto) al reporte de Allure, solo en el punto de validación de cada test
 - `conftest.py` — fixtures `api_client`, `auth_token`, `booking_payload`, `created_booking` (crea y borra su propia reserva, mismo principio de aislamiento que la suite de UI: cada test es dueño de sus datos)
 - `tests/` — casos de prueba
+
+**Nota sobre `pytest.ini`.** Esta suite no usa BDD, pero `allure-pytest` y `allure-pytest-bdd` viven en el `requirements.txt` único del repo — si ambos están instalados, `allure-pytest-bdd` igual se auto-carga y choca con `allure-pytest` al registrar `--alluredir` (mismo conflicto documentado en `ui-tests/booking-flow/pytest.ini`), aunque este suite nunca pida BDD. Por eso `pytest.ini` desactiva `allure_pytest_bdd` de forma defensiva (`-p no:allure_pytest_bdd`); `allure-pytest` se deja activo por defecto porque esta suite sí lo usa (no hace falta pasar `-p allure_pytest` a mano como en UI).
 
 ## Cómo correr
 
