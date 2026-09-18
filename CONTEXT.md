@@ -1,6 +1,6 @@
 # CONTEXT.md — qa-automation-portfolio
 
-> Documento de continuidad para retomar este proyecto en cualquier sesión nueva de Claude Code sin perder contexto. Generado el 2026-09-18 verificando el estado real de los archivos (no solo la memoria de la conversación).
+> Documento de continuidad para retomar este proyecto en cualquier sesión nueva de Claude Code sin perder contexto. Creado el 2026-09-18, actualizado el 2026-09-18 (misma sesión) verificando el estado real de los archivos (no solo la memoria de la conversación) — esto es lo que cambia seguido; las reglas y convenciones estables viven en [`CLAUDE.md`](CLAUDE.md), que se carga automáticamente en cada sesión de Claude Code.
 >
 > Este repo es **parte** de un plan de estudio de 14 semanas más amplio (Claude IA + QE Automation). El plan completo vive en `C:\Users\andre\Documents\proyecto_claude\plan-estudio-andres-qe-ia-contexto-v2.md` y en la memoria de Claude Code (`plan_estudio_qe.md`, `perfil_andres.md`, `reglas_evaluacion.md`, `feedback_no_coauthor_portfolio.md`). Este CONTEXT.md documenta específicamente el estado del **repo**, no el plan de estudio completo.
 
@@ -41,8 +41,9 @@ Cada bloque de este repo corresponde a una semana del plan de estudio (semanas 4
 | **CI/CD (GitHub Actions)** | ✅ Funciona, badge verde | `.github/workflows/tests.yml` |
 | **Docker** | ✅ Funciona local y en CI (mismo Dockerfile, "dos usos") | `Dockerfile`, `.dockerignore` |
 | **Reportes Allure** | ✅ Funciona, con capturas de pantalla en puntos de validación | `utils/allure_helpers.py` |
+| **Documentación de continuidad** | ✅ `CONTEXT.md` (este archivo) + `CLAUDE.md` creados y commiteados | `CONTEXT.md`, `CLAUDE.md` |
 
-Todo el trabajo está **commiteado y pusheado** a `origin/master`. Último commit: `ff834d4` — "Week 7 complete BDD implementation, improve allure reports, change pytest configuration". Working tree limpio (`git status` sin cambios pendientes al momento de escribir esto).
+Todo el trabajo está **commiteado y pusheado** a `origin/master`. Último commit: `3802cd7` — "docs: add project context and Claude instructions" (agrega `CLAUDE.md` + `CONTEXT.md`, 533 líneas, sin tocar código). Commit anterior: `ff834d4` — cierre de la semana 7 (Docker + BDD). Working tree limpio (`git status` sin cambios pendientes al momento de escribir esto).
 
 ### ❌ Qué NO funciona / está incompleto
 
@@ -66,7 +67,8 @@ qa-automation-portfolio/
 │   └── workflows/
 │       └── tests.yml                    # CI/CD — ver sección 4
 ├── .gitignore
-├── CONTEXT.md                            # este archivo
+├── CLAUDE.md                              # reglas/convenciones permanentes, se carga solo en cada sesión de Claude Code
+├── CONTEXT.md                            # este archivo — estado cambiante, no se carga solo
 ├── Dockerfile                            # imagen única, usada local y en CI
 ├── README.md                             # README raíz del portafolio
 ├── requirements.txt                      # dependencias Python (único archivo para todo el repo)
@@ -151,6 +153,8 @@ qa-automation-portfolio/
 | `ui-tests/booking-flow/features/*.feature` | Escenarios Gherkin | Solo 2 archivos, 1 escenario cada uno — cubren "el flujo de portada", no negativos |
 | `api-tests/restful-booker/utils/booking_client.py` | Cliente HTTP para Restful-booker | `update_booking()` acepta `token` opcional para testear "sin cookie" como caso propio |
 | `api-tests/restful-booker/utils/schemas.py` | Modelos pydantic | Valida shape de la respuesta de `POST /booking` |
+| `CLAUDE.md` | Reglas/convenciones permanentes del repo | Se carga automáticamente en cada sesión de Claude Code — mantenerlo corto y estable, nada que cambie seguido va ahí |
+| `CONTEXT.md` | Este archivo — estado, pendientes, último punto de trabajo | Actualizar cada vez que avance el trabajo; NO se carga automáticamente, hay que pedir explícitamente que se revise |
 
 ### Cambios importantes realizados (cronológicos, resumen)
 
@@ -163,7 +167,8 @@ qa-automation-portfolio/
 7. Fix de versión: `playwright==1.62.0` exacto + imagen `v1.62.0-noble` (antes desalineados)
 8. BDD agregado con `pytest-bdd`, reutilizando los Page Objects existentes
 9. Capturas de pantalla en Allure en puntos de validación (`attach_screenshot`)
-10. Resolución del conflicto `allure-pytest` vs `allure-pytest-bdd` (ver sección 6) — el cambio más grande de la última sesión
+10. Resolución del conflicto `allure-pytest` vs `allure-pytest-bdd` (ver sección 6) — el cambio más grande de la sesión de cierre de semana 7
+11. Creación de `CONTEXT.md` (estado/pendientes/continuidad) y `CLAUDE.md` (reglas permanentes), commiteados juntos en `3802cd7`
 
 ---
 
@@ -196,6 +201,9 @@ Ver detalle completo en la sección 6 (fue el problema más grande resuelto en l
 
 ### Números de habitación con sufijo aleatorio en la batería (no puramente aleatorios, no puramente fijos)
 `room_battery.xlsx` usa números fijos (200-204) a propósito, para simular el patrón real de "TR con datos hardcodeados" de Selenium. Pero se le agrega un sufijo aleatorio de 2 dígitos al enviarlo, porque dos corridas de CI dentro de la ventana de reset de ~10 min de la app (frecuente durante desarrollo activo, disparando varios pushes seguidos) generaban colisiones de ID en el DOM. Se mantiene el número base del Excel para trazabilidad en el reporte.
+
+### Separar `CLAUDE.md` (permanente) de `CONTEXT.md` (cambiante), en vez de un solo archivo de documentación
+Andres pidió explícitamente dos archivos con propósitos distintos: `CLAUDE.md` para lo que Claude Code carga automáticamente en cada sesión (arquitectura estable, convenciones, reglas duras — no debe crecer con cada avance de la semana), y `CONTEXT.md` para todo lo que sí cambia (estado actual, pendientes, último punto de trabajo, problemas y soluciones). Regla explícita: nada que cambie seguido va en `CLAUDE.md`. Ambos se generaron/actualizaron verificando el estado real de los archivos (`git log`, `git status`, releer cada archivo mencionado), no solo la memoria de la conversación — al hacerlo se encontró y corrigió una imprecisión real en `CONTEXT.md` (ver sección 6, "problema" sobre la tabla de estado).
 
 ---
 
@@ -239,6 +247,11 @@ Ver detalle completo en la sección 6 (fue el problema más grande resuelto en l
 ### Problema recurrente de entorno: Git Bash en Windows "traga" rutas estilo Unix
 - Al verificar volúmenes de Docker con rutas como `/app/allure-results`, Git Bash (MSYS) las reinterpretaba como rutas de Windows, dando falsos negativos. **Solución:** usar PowerShell para esas verificaciones específicas, no Git Bash.
 
+### Problema: la primera versión de `CONTEXT.md` tenía una imprecisión real (encontrada al pedir revisión explícita)
+- **Síntoma:** la tabla de estado decía que "Batería de datos (TR/battery)" completa era bloqueante en CI.
+- **Causa:** al resumir de memoria, se trató la batería como un bloque único. `tests.yml` en realidad la divide: `test_room_battery.py` va en el step bloqueante (admin+rooms), pero `test_booking_battery.py` va agrupado con el booking flow (no bloqueante, misma flakiness).
+- **Solución:** releer `tests.yml` línea por línea contra lo escrito y separar la fila en dos, cada una con su estado real. **Lección general:** al documentar el estado de un pipeline de CI, verificar el archivo `.yml` real en vez de resumir de memoria — es fácil generalizar de más cuando varios tests parecen "del mismo bloque" pero el pipeline los trata distinto.
+
 ---
 
 ## 7. PENDIENTES
@@ -267,27 +280,30 @@ Ver detalle completo en la sección 6 (fue el problema más grande resuelto en l
 
 ## 8. ÚLTIMO PUNTO DE TRABAJO
 
-**Qué se estaba haciendo justo antes de crear este archivo:**
+**Qué se estaba haciendo justo antes de este último cambio:**
 
-Se acababa de cerrar completamente la **semana 7** del plan de estudio (Docker + BDD), incluyendo una sesión larga de troubleshooting real sobre reportes de Allure:
+Se acababa de cerrar completamente la **semana 7** del plan de estudio (Docker + BDD), incluyendo una sesión larga de troubleshooting real sobre reportes de Allure. Después, en la misma sesión, se hizo un trabajo puramente de documentación/continuidad (sin tocar código de la suite):
 
 1. Se agregó BDD (`pytest-bdd`) con dos features (`booking.feature`, `admin_room.feature`) y sus step definitions, reutilizando los Page Objects existentes.
 2. Andres pidió capturas de pantalla en el reporte de Allure, pero **solo en puntos de validación**, no en cada acción — se creó `utils/allure_helpers.py::attach_screenshot()`.
 3. Se descubrió que `allure-pytest` y `allure-pytest-bdd` no pueden convivir (conflicto de `--alluredir`), y que `allure-pytest-bdd` solo no sirve para tests planos. Se resolvió desactivando ambos por defecto en `pytest.ini` y documentando cómo reactivar cada uno puntualmente (incluyendo el patrón de bloques comentados que Andres ya usa en su trabajo).
 4. Se corrigió CI (`tests.yml`) para pasar `-p allure_pytest` explícito en sus dos steps de UI, ya que dejaron de estar activos por defecto.
-5. Todo esto se commiteó y pusheó por Andres (commit `ff834d4`).
-6. Se hizo la evaluación de cierre de semana 7 (3/3 correctas).
-7. Se le dio a Andres un resumen del estado completo del plan (semanas 1-7 completas, semana 8 en adelante pendiente).
-8. **Este mismo mensaje** pidió crear este `CONTEXT.md`.
+5. Se hizo la evaluación de cierre de semana 7 (3/3 correctas). Todo esto se commiteó y pusheó por Andres (commit `ff834d4`).
+6. Se le dio a Andres un resumen del estado completo del plan (semanas 1-7 completas, semana 8 en adelante pendiente).
+7. Andres pidió crear `CONTEXT.md` (verificando estado real de archivos, no solo memoria de la conversación) — creado con las 10 secciones pedidas.
+8. Andres pidió revisar `CONTEXT.md` contra el estado real y corregir — se encontró y corrigió una imprecisión real (la tabla de estado trataba toda la batería como bloqueante en CI, cuando en realidad `test_booking_battery.py` no lo es — ver sección 6).
+9. Andres pidió crear `CLAUDE.md` con las reglas/convenciones permanentes (arquitectura, stack, cómo correr, convenciones de código, reglas duras, qué no tocar sin consultar) — separado explícitamente de `CONTEXT.md` para que solo lo estable se cargue automáticamente en cada sesión.
+10. Andres commiteó y pusheó ambos archivos él mismo (`3802cd7` — "docs: add project context and Claude instructions").
+11. **Este mismo mensaje** pidió esta segunda actualización de `CONTEXT.md`, para dejar registrado todo lo aprendido/cambiado en esta sesión de documentación (este bloque que estás leyendo).
 
 **Cuál debería ser el siguiente paso:**
 
 Preguntarle a Andres si quiere:
 - (a) Empezar la **semana 8** (servidor Oracle Cloud) — esto es un cambio de dominio grande, de QA automation a administración de servidor Linux/backend, y probablemente merece calibrar su experiencia previa en SSH/Linux/Nginx antes de empezar (mismo patrón usado en semanas anteriores: preguntar nivel antes de decidir cuánto explicar).
 - (b) Cerrar algún pendiente de la sección 7 primero (conectar BDD a CI, casos negativos explícitos).
-- (c) Pausar aquí — este repo (`qa-automation-portfolio`) ya cumple el hito de "repo completo según estándar de mercado 2026" que pedía el plan.
+- (c) Pausar aquí — este repo (`qa-automation-portfolio`) ya cumple el hito de "repo completo según estándar de mercado 2026" que pedía el plan, y ahora además tiene `CLAUDE.md`/`CONTEXT.md` para que cualquier sesión futura retome sin fricción.
 
-No hay ninguna tarea a medias ni ningún archivo sin commitear en este momento — es un punto de corte limpio.
+No hay ninguna tarea a medias ni ningún archivo sin commitear en este momento — es un punto de corte limpio. Recordatorio para la próxima vez que avance el trabajo real (no solo documentación): volver a actualizar esta sección 8 y el resto de `CONTEXT.md` — no se actualiza solo.
 
 ---
 
@@ -374,3 +390,5 @@ No requiere comando manual — se dispara en `push`/`pull_request` a `master`, o
 - **La app de práctica de UI (`automationintesting.online`) resetea sus datos cada ~10 minutos.** Cualquier test nuevo que se agregue debe seguir el mismo principio ya aplicado en todo el repo: crear sus propios datos con algún componente único (uuid, random), nunca asumir estado preexistente ni usar valores 100% fijos sin al menos un sufijo de unicidad.
 
 - **Restful-booker (la API) tiene varias inconsistencias reales de status codes** (documentadas en `api-tests/restful-booker/README.md`) — no "corregirlas" asumiendo que son errores de test; son el comportamiento real y verificado de la API externa.
+
+- **Mantener la separación `CLAUDE.md` (permanente) / `CONTEXT.md` (cambiante).** No mover contenido de estado/pendientes a `CLAUDE.md` (crecería sin control y se cargaría completo en cada sesión), y no dejar que `CLAUDE.md` se vuelva obsoleto — solo debería tocarse cuando cambie algo realmente estructural (nueva convención, nueva restricción técnica dura), no en cada avance semanal. Este `CONTEXT.md` sí hay que actualizarlo activamente cada vez que avance el trabajo real — no se actualiza solo, y quedarse desactualizado es peor que no tenerlo (genera falsa confianza).
