@@ -7,7 +7,3 @@ class BasePage:
 
     def goto(self, path: str = "/"):
         self.page.goto(path)
-
-    def accept_cookies_if_present(self):
-        # TODO: mapear el banner de cookies real de automationintesting.online con DevTools
-        pass

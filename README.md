@@ -16,9 +16,10 @@ qa-automation-portfolio/
 │   └── tests/bdd/            → step definitions que conectan cada .feature con los Page Objects
 ├── api-tests/restful-booker/→ pytest + requests contra restful-booker.herokuapp.com
 ├── Dockerfile                → mismo usado en local y en CI
-├── .github/workflows/       → CI
-└── reports/                 → configuración/salida de Allure
+└── .github/workflows/       → CI
 ```
+
+Los reportes de Allure no se commitean: cada suite los genera en su propia carpeta `allure-results/` (gitignorada) al correr los tests, y en CI se suben como artifacts de cada run.
 
 ## Stack
 
@@ -35,7 +36,7 @@ qa-automation-portfolio/
 - Caché de capas de Docker vía el backend de GitHub Actions (`cache-from`/`cache-to: type=gha`) para que los builds siguientes sean rápidos
 - Job `api-tests` (rápido, sin navegador) + job `ui-tests` en matrix cross-browser (Chromium, Firefox, WebKit), corriendo en paralelo, cada uno con su propio `docker run` y resultados extraídos del contenedor vía volumen montado
 - `config/remote_config.json` separa la config de pipeline de la de uso local (`init.json`) — mismo patrón que en Selenium: headless forzado y sin lógica de entorno mezclada en la clase `Config`
-- El job de UI corre en dos steps: `admin + rooms` (bloqueante) y `booking flow` (`continue-on-error: true` + `--reruns 2`) — el flujo de booking falla consistentemente solo desde runners de GitHub, probablemente por bloqueo anti-bot del sitio de demo a IPs de datacenter (confirmado que no es un bug del código ni de Docker: el mismo test pasa siempre en local, headed o headless, dentro y fuera del contenedor). Se reporta y se guardan sus artifacts igual, pero no tumba el badge por una limitación de un tercero fuera de nuestro control. Detalle completo en `ui-tests/booking-flow/README.md`
+- El job de UI corre en cuatro steps, con el mismo criterio replicado en su versión BDD: `admin + rooms` y `BDD - admin room` son bloqueantes; `booking flow` y `BDD - booking` corren con `continue-on-error: true` + `--reruns 2`, porque ese flujo falla consistentemente solo desde runners de GitHub, probablemente por bloqueo anti-bot del sitio de demo a IPs de datacenter (confirmado que no es un bug del código ni de Docker: el mismo test pasa siempre en local, headed o headless, dentro y fuera del contenedor). Se reportan y se guardan sus artifacts igual, pero no tumban el badge por una limitación de un tercero fuera de nuestro control. Detalle completo en `ui-tests/booking-flow/README.md`
 - Resultados de Allure y trazas de fallos se suben como artifacts de cada run
 
 ## Cómo correr

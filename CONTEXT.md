@@ -273,8 +273,8 @@ Andres pidió explícitamente dos archivos con propósitos distintos: `CLAUDE.md
 - [x] Evaluar agregar `attach_screenshot()`-equivalente (adjuntar JSON de respuesta) a los tests de `api-tests/` — **hecho 2026-09-18**: `utils/allure_helpers.py::attach_response()`, usado en los 10 tests existentes
 
 ### Bugs conocidos / deuda técnica menor
-- `pages/base_page.py::accept_cookies_if_present()` es un stub sin implementar ni usar — candidato a implementarlo o eliminarlo
-- El README raíz todavía menciona una carpeta `reports/` en el diagrama de estructura que no existe como tal en el repo (Allure escribe a `allure-results/`, no a `reports/`)
+- ~~`pages/base_page.py::accept_cookies_if_present()` stub sin implementar ni usar~~ — **resuelto 2026-09-18**: se verificó contra la app real que no existe ningún banner de cookies (solo un link estático a `/cookie` en el footer) y que el método no se llamaba desde ningún test; se eliminó el stub en vez de implementar algo que no hace falta.
+- ~~El README raíz mencionaba una carpeta `reports/` que no existe~~ — **resuelto 2026-09-18**: se corrigió el diagrama de estructura del README raíz (Allure escribe a `allure-results/` por suite, gitignorado, no a `reports/`) y de paso se actualizó la sección CI/CD de ese mismo README, que todavía describía solo 2 steps de UI y no mencionaba los 2 steps de BDD agregados en el commit anterior.
 
 ### Mejoras pendientes (mencionadas como "para después", no bloqueantes)
 - Publicar el reporte de Allure como GitHub Pages (el plan original lo daba como alternativa a "artifact del run", que ya está cubierto)
@@ -306,16 +306,23 @@ Al retomar esta sesión se le presentaron a Andres las 3 opciones de la sección
 - `api-tests/restful-booker` completo — 10/10 pasan, con adjuntos de Allure verificados (JSON para la mayoría, texto plano para `/ping`).
 - `tests/booking/test_booking.py` y `tests/bdd/test_booking_steps.py` (la reserva "feliz", no la negativa) fallaron intermitentemente en este entorno con el mismo error `"This page couldn't load"` ya documentado para CI — consistente con la hipótesis de bloqueo de IPs de datacenter (este entorno de ejecución de Claude Code probablemente también sale por una IP de ese tipo, a diferencia de la máquina personal de Andres). No es una regresión de esta sesión ni algo que estos cambios hayan tocado — el test negativo de teléfono no llega a ese punto del flujo y pasó siempre. Andres debería confirmar en SU máquina que el booking flow "feliz" sigue pasando en local, como siempre.
 
-**Todavía no comiteado.** Quedan sin commitear (working directory listo para revisión de Andres, siguiendo la regla de que Claude no comitea/pushea sin pedirlo explícito):
-- `.github/workflows/tests.yml`, `CLAUDE.md`, `CONTEXT.md` (este archivo), ambos README de suite
-- `ui-tests/booking-flow/pages/booking_page.py` (locator nuevo)
-- `ui-tests/booking-flow/tests/booking/test_booking_negative.py` (nuevo)
-- `ui-tests/booking-flow/tests/admin/test_admin_negative.py` (nuevo)
-- `api-tests/restful-booker/pytest.ini` (fix del conflicto de Allure)
-- `api-tests/restful-booker/utils/allure_helpers.py` (nuevo)
-- `api-tests/restful-booker/tests/test_auth.py`, `test_booking_crud.py`, `test_negative_cases.py` (uso de `attach_response`)
+**Commiteado y pusheado por Andres.** Commit `213a48e` — "Add negative tests, run BDD in CI, attach API responses to Allure" (todo lo listado arriba en un solo commit, sin trailer `Co-Authored-By`). Verificado con `git fetch` que `origin/master` ya lo tiene. Working tree limpio.
 
-**Cuál debería ser el siguiente paso:** con los 4 pendientes de este repo cerrados, las opciones vuelven a ser las mismas 3 de antes (semana 8 / algo más de deuda técnica menor — `accept_cookies_if_present()` stub, nota de `reports/` en el README raíz / pausar), salvo que ahora ya no hay pendientes explícitos de UI o API pendientes de cerrar.
+**Continuación en la misma sesión (2026-09-18): CI verificado en verde + deuda técnica menor cerrada.**
+
+Se verificó el commit `213a48e` corriendo de verdad en GitHub Actions (Tests #9): los 4 jobs (`api-tests`, `ui-tests` × chromium/firefox/webkit) terminaron en `success`, incluidos los 2 steps nuevos de BDD y el step de booking flow (que esta vez ni necesitó el `continue-on-error`). Con eso confirmado, Andres pidió cerrar también la deuda técnica menor que quedaba, para llegar a la semana 8 sin nada suelto:
+
+1. **`accept_cookies_if_present()` stub** — antes de decidir, se verificó contra la app real (`automationintesting.online`) si existe un banner de cookies de verdad. No existe (solo un link estático a `/cookie` en el footer, sin ningún popup de consentimiento). Confirmado además por grep que el método nunca se llamaba desde ningún test. Se eliminó el stub de `pages/base_page.py` en vez de implementar algo innecesario (siguiendo la convención del repo: no dejar código sin terminar, borrar con confianza lo que se confirma que no se usa).
+2. **Mención de `reports/` en el README raíz** — se corrigió el diagrama de estructura (Allure escribe a `allure-results/` por suite, no existe una carpeta `reports/`) y se aprovechó para actualizar la sección CI/CD de ese mismo README, que describía el pipeline de UI con solo 2 steps y no mencionaba los 2 steps de BDD agregados en el commit anterior.
+
+Verificado con un run rápido de `pytest tests/admin tests/booking/test_booking_negative.py` (3/3 pasan) que quitar el stub no rompió nada. Todavía sin commitear al momento de escribir esto — ver lista de archivos abajo.
+
+**Archivos tocados en esta continuación (sin commitear):**
+- `ui-tests/booking-flow/pages/base_page.py` (elimina el stub)
+- `README.md` (raíz — corrige estructura y sección CI/CD)
+- `CONTEXT.md` (este archivo)
+
+**Cuál debería ser el siguiente paso:** con los 4 pendientes originales cerrados Y verificados en CI, y la deuda técnica menor también cerrada, ya no queda nada suelto en este repo (`qa-automation-portfolio`) salvo las "mejoras para después" no bloqueantes de la sección 7 (GitHub Pages para Allure, caché de pip — ninguna de las dos es deuda técnica real, son ideas opcionales). El camino natural es empezar la **semana 8** (servidor Oracle Cloud) cuando Andres esté listo, o pausar acá.
 
 ---
 
