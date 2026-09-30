@@ -437,4 +437,9 @@ No requiere comando manual — se dispara en `push`/`pull_request` a `master`, o
 
 - **Restful-booker (la API) tiene varias inconsistencias reales de status codes** (documentadas en `api-tests/restful-booker/README.md`) — no "corregirlas" asumiendo que son errores de test; son el comportamiento real y verificado de la API externa.
 
+- **Este repo tiene la GitHub App "Claude" instalada (desde 2026-09-29, semana 11 del plan)** — ver `github.com/settings/installations` desde la cuenta de Andres. Se instaló para conectar dos "Routines" de Claude Code (agentes programados en la nube, administrados desde `claude.ai/code/routines`, no viven en ningún archivo de este repo):
+  - Una routine nocturna que revisa el estado de CI y avisa a un canal de Slack de Andres — **funcionando**.
+  - Una routine pensada para comentar automáticamente en PRs nuevos con un checklist QA — **configurada pero todavía no dispara** (el webhook de GitHub no está llegando, sin diagnóstico posible desde una sesión normal de Claude Code). Detalle completo del intento y las hipótesis para retomarlo en `qa-portfolio-server/CONTEXT.md` (sección 4, semana 11) y `qa-portfolio-server/CLAUDE.md`.
+  - Si alguna vez se quiere quitar el acceso de la app a este repo, es un cambio de configuración de GitHub, no de este repo — no hay nada que editar acá para eso.
+
 - **Mantener la separación `CLAUDE.md` (permanente) / `CONTEXT.md` (cambiante).** No mover contenido de estado/pendientes a `CLAUDE.md` (crecería sin control y se cargaría completo en cada sesión), y no dejar que `CLAUDE.md` se vuelva obsoleto — solo debería tocarse cuando cambie algo realmente estructural (nueva convención, nueva restricción técnica dura), no en cada avance semanal. Este `CONTEXT.md` sí hay que actualizarlo activamente cada vez que avance el trabajo real — no se actualiza solo, y quedarse desactualizado es peor que no tenerlo (genera falsa confianza).
