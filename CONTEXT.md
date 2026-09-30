@@ -1,6 +1,6 @@
 # CONTEXT.md — qa-automation-portfolio
 
-> Documento de continuidad para retomar este proyecto en cualquier sesión nueva de Claude Code sin perder contexto. Creado el 2026-09-18, actualizado el 2026-09-18 (sesión de cierre de pendientes, ver sección 8) verificando el estado real de los archivos (no solo la memoria de la conversación) — esto es lo que cambia seguido; las reglas y convenciones estables viven en [`CLAUDE.md`](CLAUDE.md), que se carga automáticamente en cada sesión de Claude Code.
+> Documento de continuidad para retomar este proyecto en cualquier sesión nueva de Claude Code sin perder contexto. Creado el 2026-09-18, actualizado el 2026-09-29 (revisión de consistencia contra `git log` y los archivos reales, ver sección 8) verificando el estado real de los archivos (no solo la memoria de la conversación) — esto es lo que cambia seguido; las reglas y convenciones estables viven en [`CLAUDE.md`](CLAUDE.md), que se carga automáticamente en cada sesión de Claude Code.
 >
 > Este repo es **parte** de un plan de estudio de 14 semanas más amplio (Claude IA + QE Automation). El plan completo vive en `C:\Users\andre\Documents\proyecto_claude\plan-estudio-andres-qe-ia-contexto-v2.md` y en la memoria de Claude Code (`plan_estudio_qe.md`, `perfil_andres.md`, `reglas_evaluacion.md`, `feedback_no_coauthor_portfolio.md`). Este CONTEXT.md documenta específicamente el estado del **repo**, no el plan de estudio completo.
 
@@ -43,13 +43,13 @@ Cada bloque de este repo corresponde a una semana del plan de estudio (semanas 4
 | **Reportes Allure** | ✅ Funciona, con capturas de pantalla en puntos de validación | `utils/allure_helpers.py` |
 | **Documentación de continuidad** | ✅ `CONTEXT.md` (este archivo) + `CLAUDE.md` creados y commiteados | `CONTEXT.md`, `CLAUDE.md` |
 
-Último commit pusheado a `origin/master`: `e0c7b50` — "update context.md". A partir de ahí, esta sesión (2026-09-18, cierre de pendientes) dejó cambios **sin commitear** en el working tree — ver el detalle completo y la lista de archivos en la sección 8. Andres los revisa y comitea/pushea él mismo (regla del repo).
+Último commit con cambios de código/README pusheado a `origin/master`: `0751bfd` — "impoves and corrections into pages, readme and context" (elimina el stub de cookies, corrige el README raíz). Después solo hubo commits de documentación (`c04240b` y siguientes). Working tree limpio — no hay nada a medias.
 
 ### ❌ Qué NO funciona / está incompleto
 
 - **El flujo de booking falla el 100% de las veces al correr desde GitHub Actions** (no localmente) — afecta a `tests/booking/test_booking.py`, `tests/battery/test_booking_battery.py` y ahora también al escenario BDD equivalente (`tests/bdd/test_booking_steps.py`), agrupados con el mismo criterio de `continue-on-error: true` en CI. Es una limitación externa (ver sección 6) — no bloquea el build, pero esos steps siguen en rojo cada vez.
-- **`BasePage.accept_cookies_if_present()`** (en `pages/base_page.py`) es un método stub sin implementar (`# TODO: mapear el banner de cookies real...`) y no se usa en ningún lado actualmente.
-- **Semanas 8-14 del plan de estudio no han empezado** (servidor Oracle Cloud, backend Flask+Postgres, frontend, Routines, Cowork/MCP, demos IA, lanzamiento) — este repo (`qa-automation-portfolio`) es semanas 4-7 únicamente.
+- Nada más: no queda deuda técnica conocida en este repo (ver sección 7).
+- **Las semanas 8-14 del plan de estudio NO viven en este repo** — este repo (`qa-automation-portfolio`) es semanas 4-7 únicamente. Ese trabajo continúa en el repo hermano `qa-portfolio-server` (`../qa-portfolio-server`, ver su propio `CONTEXT.md`): al 2026-09-29, semanas 8-10 completas (servidor Oracle Cloud dockerizado, Postgres + API REST, HTTPS en `andresqe.duckdns.org`, panel admin) y semana 11 en curso (routine nocturna de CI → Slack funcionando sobre ESTE repo; review automático de PRs y deploy automático pendientes).
 
 ---
 
@@ -172,6 +172,8 @@ qa-automation-portfolio/
 9. Capturas de pantalla en Allure en puntos de validación (`attach_screenshot`)
 10. Resolución del conflicto `allure-pytest` vs `allure-pytest-bdd` (ver sección 6) — el cambio más grande de la sesión de cierre de semana 7
 11. Creación de `CONTEXT.md` (estado/pendientes/continuidad) y `CLAUDE.md` (reglas permanentes), commiteados juntos en `3802cd7`
+12. Tests negativos (teléfono inválido, login admin incorrecto), BDD conectado a CI, respuestas HTTP adjuntas a Allure en API (`213a48e`)
+13. Eliminación del stub `accept_cookies_if_present()` y corrección del README raíz (`0751bfd`)
 
 ---
 
@@ -315,14 +317,13 @@ Se verificó el commit `213a48e` corriendo de verdad en GitHub Actions (Tests #9
 1. **`accept_cookies_if_present()` stub** — antes de decidir, se verificó contra la app real (`automationintesting.online`) si existe un banner de cookies de verdad. No existe (solo un link estático a `/cookie` en el footer, sin ningún popup de consentimiento). Confirmado además por grep que el método nunca se llamaba desde ningún test. Se eliminó el stub de `pages/base_page.py` en vez de implementar algo innecesario (siguiendo la convención del repo: no dejar código sin terminar, borrar con confianza lo que se confirma que no se usa).
 2. **Mención de `reports/` en el README raíz** — se corrigió el diagrama de estructura (Allure escribe a `allure-results/` por suite, no existe una carpeta `reports/`) y se aprovechó para actualizar la sección CI/CD de ese mismo README, que describía el pipeline de UI con solo 2 steps y no mencionaba los 2 steps de BDD agregados en el commit anterior.
 
-Verificado con un run rápido de `pytest tests/admin tests/booking/test_booking_negative.py` (3/3 pasan) que quitar el stub no rompió nada. Todavía sin commitear al momento de escribir esto — ver lista de archivos abajo.
+Verificado con un run rápido de `pytest tests/admin tests/booking/test_booking_negative.py` (3/3 pasan) que quitar el stub no rompió nada.
 
-**Archivos tocados en esta continuación (sin commitear):**
-- `ui-tests/booking-flow/pages/base_page.py` (elimina el stub)
-- `README.md` (raíz — corrige estructura y sección CI/CD)
-- `CONTEXT.md` (este archivo)
+**Commiteado y pusheado por Andres** en `0751bfd` (`base_page.py`, `README.md`, `CONTEXT.md`). Luego `c04240b` agregó a este archivo la nota sobre la GitHub App "Claude" (sección 10).
 
-**Cuál debería ser el siguiente paso:** con los 4 pendientes originales cerrados Y verificados en CI, y la deuda técnica menor también cerrada, ya no queda nada suelto en este repo (`qa-automation-portfolio`) salvo las "mejoras para después" no bloqueantes de la sección 7 (GitHub Pages para Allure, caché de pip — ninguna de las dos es deuda técnica real, son ideas opcionales). El camino natural es empezar la **semana 8** (servidor Oracle Cloud) cuando Andres esté listo, o pausar acá.
+**2026-09-29 — Revisión de consistencia (solo documentación).** Al retomar en una sesión nueva se comparó este archivo contra `git log`, `git status` y los archivos reales. Se corrigieron imprecisiones: la sección 8 todavía listaba archivos "sin commitear" que ya estaban en `0751bfd`; la sección 2 citaba `e0c7b50` como último commit, seguía listando el stub de cookies como pendiente (ya eliminado del código) y decía que las semanas 8-14 no habían empezado (las 8-10 ya están completas en `qa-portfolio-server`); y quedaba un bloque viejo de "siguiente paso" con opciones ya resueltas. Ningún cambio de código.
+
+**Cuál debería ser el siguiente paso:** este repo (`qa-automation-portfolio`) no tiene nada suelto — solo las "mejoras para después" opcionales de la sección 7 (GitHub Pages para Allure, caché de pip). El trabajo activo del plan de estudio sigue en `qa-portfolio-server` (semana 11: review automático de PRs sobre ESTE repo y deploy automático del servidor — ver el `CONTEXT.md` de ese repo). Si se retoma la pieza de review de PRs, es probable que implique abrir PRs de prueba contra este repo.
 
 ---
 
@@ -342,14 +343,7 @@ Se acababa de cerrar completamente la **semana 7** del plan de estudio (Docker +
 10. Andres commiteó y pusheó ambos archivos él mismo (`3802cd7` — "docs: add project context and Claude instructions").
 11. **Este mismo mensaje** pidió esta segunda actualización de `CONTEXT.md`, para dejar registrado todo lo aprendido/cambiado en esta sesión de documentación (este bloque que estás leyendo).
 
-**Cuál debería ser el siguiente paso:**
-
-Preguntarle a Andres si quiere:
-- (a) Empezar la **semana 8** (servidor Oracle Cloud) — esto es un cambio de dominio grande, de QA automation a administración de servidor Linux/backend, y probablemente merece calibrar su experiencia previa en SSH/Linux/Nginx antes de empezar (mismo patrón usado en semanas anteriores: preguntar nivel antes de decidir cuánto explicar).
-- (b) Cerrar algún pendiente de la sección 7 primero (conectar BDD a CI, casos negativos explícitos).
-- (c) Pausar aquí — este repo (`qa-automation-portfolio`) ya cumple el hito de "repo completo según estándar de mercado 2026" que pedía el plan, y ahora además tiene `CLAUDE.md`/`CONTEXT.md` para que cualquier sesión futura retome sin fricción.
-
-No hay ninguna tarea a medias ni ningún archivo sin commitear en este momento — es un punto de corte limpio. Recordatorio para la próxima vez que avance el trabajo real (no solo documentación): volver a actualizar esta sección 8 y el resto de `CONTEXT.md` — no se actualiza solo.
+*(Histórico: al cierre de esa sesión las opciones eran empezar la semana 8, cerrar pendientes de la sección 7 o pausar. Andres cerró los pendientes (ver arriba) y después arrancó la semana 8 en `qa-portfolio-server`. Recordatorio vigente: actualizar esta sección 8 cada vez que avance el trabajo real — no se actualiza sola.)*
 
 ---
 
@@ -439,7 +433,8 @@ No requiere comando manual — se dispara en `push`/`pull_request` a `master`, o
 
 - **Este repo tiene la GitHub App "Claude" instalada (desde 2026-09-29, semana 11 del plan)** — ver `github.com/settings/installations` desde la cuenta de Andres. Se instaló para conectar dos "Routines" de Claude Code (agentes programados en la nube, administrados desde `claude.ai/code/routines`, no viven en ningún archivo de este repo):
   - Una routine nocturna que revisa el estado de CI y avisa a un canal de Slack de Andres — **funcionando**.
-  - Una routine pensada para comentar automáticamente en PRs nuevos con un checklist QA — **configurada pero todavía no dispara** (el webhook de GitHub no está llegando, sin diagnóstico posible desde una sesión normal de Claude Code). Detalle completo del intento y las hipótesis para retomarlo en `qa-portfolio-server/CONTEXT.md` (sección 4, semana 11) y `qa-portfolio-server/CLAUDE.md`.
+  - Una routine que comenta automáticamente en PRs abiertos con un checklist QA basado en este `CLAUDE.md` — **funcionando desde 2026-09-30 vía cron horario** (minuto 33 de cada hora, así que un PR nuevo puede tardar hasta ~1h en recibir el comentario). No comenta dos veces el mismo commit. El webhook de `pull_request` sigue enganchado pero nunca disparó. Detalle en `qa-portfolio-server/CONTEXT.md` (sección 4, semana 11) y `qa-portfolio-server/CLAUDE.md`.
+  - Consecuencia práctica: **cualquier PR abierto en este repo va a recibir un comentario automático**, incluidos los PRs de prueba.
   - Si alguna vez se quiere quitar el acceso de la app a este repo, es un cambio de configuración de GitHub, no de este repo — no hay nada que editar acá para eso.
 
 - **Mantener la separación `CLAUDE.md` (permanente) / `CONTEXT.md` (cambiante).** No mover contenido de estado/pendientes a `CLAUDE.md` (crecería sin control y se cargaría completo en cada sesión), y no dejar que `CLAUDE.md` se vuelva obsoleto — solo debería tocarse cuando cambie algo realmente estructural (nueva convención, nueva restricción técnica dura), no en cada avance semanal. Este `CONTEXT.md` sí hay que actualizarlo activamente cada vez que avance el trabajo real — no se actualiza solo, y quedarse desactualizado es peor que no tenerlo (genera falsa confianza).
