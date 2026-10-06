@@ -10,6 +10,10 @@ class AdminPage(BasePage):
         self.admin_username_input = page.get_by_role("textbox", name="Username")
         self.admin_password_input = page.get_by_role("textbox", name="Password")
         self.admin_login_button = page.get_by_role("button", name="Login")
+        # El filtro por texto es necesario: hay un segundo role="alert" vacío
+        # (el route announcer de Next.js) y get_by_role("alert") a secas
+        # resolvería a 2 elementos (strict mode violation).
+        self.admin_login_error_alert = page.get_by_role("alert").filter(has_text="Invalid credentials")
 
         # Admin options
         self.admin_login_option_button = page.get_by_role("link", name="Admin", exact=True)
