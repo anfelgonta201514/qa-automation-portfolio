@@ -6,6 +6,21 @@
 
 ---
 
+## 0. RETOMAR AQUÍ (estado al cierre de la sesión del 2026-10-09)
+
+**Este repo no tiene trabajo de código pendiente.** Verificado el 2026-10-09: sincronizado con `origin/master`, último commit `9849c29` ("Close QAP-7 and QAP-8"). Su CI corrió en verde (API + UI en Chromium, Firefox y WebKit). **Única cosa sin commitear: este mismo `CONTEXT.md`** (la sección 0), que Andres commitea por su cuenta. Ese mismo día se borraron 4 carpetas vacías de la raíz (`admin_test`, `booking_battery`, `features`, `reports`): git no las rastreaba, eran restos de la estructura original del plan, y CLAUDE.md dice que `features/` no debe estar en la raíz.
+
+**El trabajo activo del plan de estudio está en el repo hermano `../qa-portfolio-server`** (semana 13: demos de IA). Para retomar, leer allí `CLAUDE.md` y la **sección 0 de su `CONTEXT.md`**: ahí están el resultado de la medición de los demos de IA (QAP-17, medido tres veces: 14 → 21 → 21 de 30, en In Review), el commit pendiente de la v3 y la lista de tickets de Jira.
+
+Lo que cambió en ESTE repo durante las semanas 12 y 13 (todo ya commiteado y verificado):
+- **QAP-7:** el test negativo de login (`tests/admin/test_admin_negative.py`) estaba construido sobre una premisa falsa. La app **sí** muestra `alert: Invalid credentials`; el test ahora lo valida. Había dos `role="alert"` (el real y el route announcer vacío de Next.js: el locator filtra por texto, `admin_login_error_alert` en `AdminPage`) y el mensaje tarda entre 0,35 y 4,96 s, por eso el assert lleva `timeout=10_000`. Además los asserts `to_be_hidden` del test viejo pasaban al instante, antes de que el servidor respondiera. Detalle en la sección 8 y en el README de la suite.
+- **Este repo lo vigilan dos routines de Claude Code** (ver sección 10): el chequeo nocturno de CI hacia Slack y un review automático de PRs con cron horario que **comenta en cualquier PR abierto** (incluidos los de prueba) según el `CLAUDE.md` de este repo.
+- Su suite de UI y la de API **no han cambiado** en la semana 13. Los demos de IA viven en el otro repo; los ejemplos de tests de API que muestran se ejecutan contra la misma API pública de práctica (Restful-booker) que prueba este repo, pero **no usan código de este repo**.
+
+**Regla que sigue valiendo:** un fallo del "booking flow" en CI es esperado, no es una regresión (ver `CLAUDE.md`). Los commits no llevan trailer `Co-Authored-By`, y Andres hace todo `git commit`/`git push`.
+
+---
+
 ## 1. OBJETIVO DEL PROYECTO
 
 **Qué estamos construyendo:** `qa-automation-portfolio`, un repositorio público de GitHub que sirve como **portafolio de automatización QA** de Andres Gonzalez (QE en FLYR), pensado para adjuntarse en CV/LinkedIn y sostenerse en entrevistas técnicas.
